@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#12263a">
+  <title>App Manager - Foyer Bourse</title>
+  <link rel="stylesheet" href="css/manager.css">
+</head>
+<body>
+  <main class="app-shell">
+    <section id="login-section" class="screen login-screen" aria-labelledby="login-title">
+      <div class="login-card">
+        <p class="eyebrow">Foyer Bourse</p>
+        <h1 id="login-title">App Manager</h1>
+        <p class="screen-intro">Connecte-toi pour enregistrer les ventes.</p>
+
+        <form id="login-form">
+          <div class="field-group">
+            <label for="manager-first-name">Ton Prénom (Manager)</label>
+            <input
+              id="manager-first-name"
+              name="managerFirstName"
+              type="text"
+              autocomplete="given-name"
+              placeholder="Ex. Camille"
+              required
+            >
+          </div>
+
+          <div class="field-group">
+            <label for="manager-password">Mot de passe</label>
+            <input
+              id="manager-password"
+              name="password"
+              type="password"
+              autocomplete="current-password"
+              placeholder="Ton mot de passe"
+              required
+            >
+          </div>
+
+          <button id="login-button" class="button button-primary button-full" type="submit">
+            Se connecter
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <section id="vente-section" class="screen vente-screen" aria-labelledby="vente-title" hidden>
+      <header class="vente-header">
+        <div>
+          <p class="eyebrow">Ventes en cours</p>
+          <h1 id="vente-title">Bonjour, <span id="manager-name">Manager</span></h1>
+        </div>
+        <button id="logout-button" class="button button-ghost" type="button">
+          Déconnexion
+        </button>
+      </header>
+
+      <div id="beer-grid" class="beer-grid">
+        <article class="beer-card" data-product-id="blonde-pression">
+          <div class="beer-card-heading">
+            <h2>Blonde Pression</h2>
+            <p class="beer-price" data-price-for="blonde-pression">3.00 €</p>
+          </div>
+          <div class="quantity-control" aria-label="Quantité de Blonde Pression">
+            <button class="quantity-button" type="button" data-action="decrease-quantity" aria-label="Retirer une Blonde Pression">−</button>
+            <span class="quantity-value" data-quantity-for="blonde-pression" aria-live="polite">1</span>
+            <button class="quantity-button" type="button" data-action="increase-quantity" aria-label="Ajouter une Blonde Pression">+</button>
+          </div>
+          <button class="button button-sell" type="button" data-action="sell" data-product-id="blonde-pression">
+            VENDRE
+          </button>
+        </article>
+
+        <article class="beer-card" data-product-id="ipa-locale">
+          <div class="beer-card-heading">
+            <h2>IPA Locale</h2>
+            <p class="beer-price" data-price-for="ipa-locale">3.50 €</p>
+          </div>
+          <div class="quantity-control" aria-label="Quantité de IPA Locale">
+            <button class="quantity-button" type="button" data-action="decrease-quantity" aria-label="Retirer une IPA Locale">−</button>
+            <span class="quantity-value" data-quantity-for="ipa-locale" aria-live="polite">1</span>
+            <button class="quantity-button" type="button" data-action="increase-quantity" aria-label="Ajouter une IPA Locale">+</button>
+          </div>
+          <button class="button button-sell" type="button" data-action="sell" data-product-id="ipa-locale">
+            VENDRE
+          </button>
+        </article>
+
+        <article class="beer-card" data-product-id="fruits-rouges">
+          <div class="beer-card-heading">
+            <h2>Fruits Rouges</h2>
+            <p class="beer-price" data-price-for="fruits-rouges">4.00 €</p>
+          </div>
+          <div class="quantity-control" aria-label="Quantité de Fruits Rouges">
+            <button class="quantity-button" type="button" data-action="decrease-quantity" aria-label="Retirer une Fruits Rouges">−</button>
+            <span class="quantity-value" data-quantity-for="fruits-rouges" aria-live="polite">1</span>
+            <button class="quantity-button" type="button" data-action="increase-quantity" aria-label="Ajouter une Fruits Rouges">+</button>
+          </div>
+          <button class="button button-sell" type="button" data-action="sell" data-product-id="fruits-rouges">
+            VENDRE
+          </button>
+        </article>
+      </div>
+
+      <button id="cancel-last-sale-button" class="button button-danger button-full" type="button">
+        Annuler la dernière vente
+      </button>
+
+      <button id="crash-market-button" class="button button-crash button-full" type="button">
+        KRACH BOURSIER 🚨
+      </button>
+    </section>
+  </main>
+
+  <script type="module" src="js/manager.js?v=4"></script>
+</body>
+</html>

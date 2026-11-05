@@ -1,0 +1,30 @@
+{
+  "parametres_bieres": {
+    "biere_1_blonde": {
+      "nom": "Blonde Pression",
+      "prix_initial": 3.00,
+      "prix_min": 2.00,
+      "prix_max": 5.00,
+      "stock_initial": 150
+    },
+    "biere_2_ipa": {
+      "nom": "IPA Locale",
+      "prix_initial": 4.50,
+      "prix_min": 3.00,
+      "prix_max": 7.00,
+      "stock_initial": 80
+    },
+    "biere_3_rouge": {
+      "nom": "Fruits Rouges",
+      "prix_initial": 4.00,
+      "prix_min": 2.50,
+      "prix_max": 6.50,
+      "stock_initial": 50
+    }
+  },
+  "prix_actuels": {
+    "biere_1_blonde": 3.00,
+    "biere_2_ipa": 4.50,
+    "biere_3_rouge": 4.00
+  }
+}

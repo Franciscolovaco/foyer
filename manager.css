@@ -1,0 +1,290 @@
+:root {
+  color-scheme: light;
+  --color-background: #f3f5f7;
+  --color-surface: #ffffff;
+  --color-primary: #164a70;
+  --color-primary-dark: #103955;
+  --color-accent: #f2a900;
+  --color-danger: #c62828;
+  --color-danger-dark: #9e1f1f;
+  --color-text: #17212b;
+  --color-muted: #607080;
+  --color-border: #dce3e8;
+  --radius-card: 1rem;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-width: 320px;
+  background: var(--color-background);
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+  color: var(--color-text);
+  background: var(--color-background);
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.app-shell {
+  width: 100%;
+  min-height: 100vh;
+}
+
+.screen {
+  width: min(100%, 34rem);
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.login-screen {
+  display: grid;
+  place-items: center;
+  padding: 1.25rem;
+}
+
+.login-card {
+  width: 100%;
+  padding: 1.5rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  box-shadow: 0 0.75rem 2rem rgba(23, 33, 43, 0.08);
+}
+
+.eyebrow {
+  margin: 0 0 0.35rem;
+  color: var(--color-primary);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+h1,
+h2,
+p {
+  margin-top: 0;
+}
+
+h1 {
+  margin-bottom: 0.5rem;
+  font-size: clamp(1.65rem, 7vw, 2.15rem);
+  line-height: 1.1;
+}
+
+.screen-intro {
+  margin-bottom: 1.5rem;
+  color: var(--color-muted);
+}
+
+.field-group {
+  margin-bottom: 1rem;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.45rem;
+  font-weight: 700;
+}
+
+input {
+  width: 100%;
+  min-height: 3.25rem;
+  padding: 0.75rem 0.9rem;
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: 2px solid var(--color-border);
+  border-radius: 0.65rem;
+}
+
+input:focus,
+button:focus-visible {
+  outline: 3px solid rgba(242, 169, 0, 0.55);
+  outline-offset: 2px;
+}
+
+.button {
+  min-height: 3.25rem;
+  padding: 0.75rem 1rem;
+  border: 0;
+  border-radius: 0.65rem;
+  font-weight: 800;
+  transition: background-color 120ms ease, transform 120ms ease;
+}
+
+.button:active {
+  transform: scale(0.98);
+}
+
+.button-full {
+  width: 100%;
+}
+
+.button-primary {
+  color: #fff;
+  background: var(--color-primary);
+}
+
+.button-primary:hover {
+  background: var(--color-primary-dark);
+}
+
+.vente-screen {
+  display: none;
+  padding-top: 1rem;
+  padding-bottom: 1.25rem;
+}
+
+.vente-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.vente-header h1 {
+  margin-bottom: 0;
+}
+
+.button-ghost {
+  min-height: 2.75rem;
+  padding: 0.5rem 0.65rem;
+  color: var(--color-primary);
+  background: transparent;
+  border: 2px solid var(--color-border);
+  font-size: 0.8rem;
+}
+
+.beer-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.beer-card {
+  padding: 1rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  box-shadow: 0 0.5rem 1.25rem rgba(23, 33, 43, 0.06);
+}
+
+.beer-card-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.beer-card h2 {
+  margin-bottom: 0;
+  font-size: 1.15rem;
+}
+
+.beer-price {
+  flex-shrink: 0;
+  margin-bottom: 0;
+  color: var(--color-primary);
+  font-size: 1.5rem;
+  font-weight: 900;
+}
+
+.quantity-control {
+  display: grid;
+  grid-template-columns: 3.25rem 1fr 3.25rem;
+  align-items: center;
+  min-height: 3.25rem;
+  margin-bottom: 0.75rem;
+  overflow: hidden;
+  border: 2px solid var(--color-border);
+  border-radius: 0.65rem;
+}
+
+.quantity-button {
+  align-self: stretch;
+  color: var(--color-primary);
+  background: #eef4f8;
+  border: 0;
+  font-size: 1.75rem;
+  font-weight: 700;
+}
+
+.quantity-value {
+  text-align: center;
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+.button-sell {
+  width: 100%;
+  min-height: 4.25rem;
+  color: #fff;
+  background: var(--color-accent);
+  font-size: 1.25rem;
+  letter-spacing: 0.04em;
+}
+
+.button-sell:hover {
+  background: #d99400;
+}
+
+.button-danger {
+  margin-top: 1.5rem;
+  color: #fff;
+  background: var(--color-danger);
+}
+
+.button-danger:hover {
+  background: var(--color-danger-dark);
+}
+
+.button-crash {
+  min-height: 3.75rem;
+  margin-top: 3rem;
+  color: #fff;
+  background: #7f1515;
+  border: 2px solid #ff4d4d;
+  font-size: 0.9rem;
+  letter-spacing: 0.04em;
+}
+
+.button-crash:hover {
+  background: #a51d1d;
+}
+
+@media (min-width: 42rem) {
+  .screen {
+    width: min(100%, 52rem);
+    padding: 2rem;
+  }
+
+  .beer-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .beer-card-heading {
+    display: block;
+  }
+
+  .beer-price {
+    margin-top: 0.5rem;
+  }
+}

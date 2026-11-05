@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#121212">
+  <title>Bourse à la bière</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <main class="dashboard-shell">
+    <header class="dashboard-header">
+      <p class="market-label">FOYER BOURSE • MARCHÉ EN DIRECT</p>
+      <h1>BOURSE À LA BIÈRE</h1>
+      <p class="market-status"><span class="status-dot" aria-hidden="true"></span> Cours en temps réel</p>
+    </header>
+
+    <div class="dashboard-content">
+      <section class="prices-panel" aria-labelledby="prices-title">
+        <div class="section-heading">
+          <div>
+            <p class="section-kicker">Marché</p>
+            <h2 id="prices-title">Prix actuels</h2>
+          </div>
+          <span class="market-clock" aria-label="Marché ouvert">LIVE</span>
+        </div>
+
+        <div class="beer-price-list">
+          <article class="price-card price-card--blonde" data-product-id="biere_1_blonde">
+            <div class="price-card-topline">
+              <span class="ticker">BLD</span>
+              <span class="trend trend-up" data-trend-for="biere_1_blonde" aria-label="Hausse">▲</span>
+            </div>
+            <h3>Blonde Pression</h3>
+            <p class="price-value" id="prix-biere_1_blonde">3.00 €</p>
+            <p class="price-caption">PRIX UNITAIRE</p>
+          </article>
+
+          <article class="price-card price-card--ipa" data-product-id="biere_2_ipa">
+            <div class="price-card-topline">
+              <span class="ticker">IPA</span>
+              <span class="trend trend-down" data-trend-for="biere_2_ipa" aria-label="Baisse">▼</span>
+            </div>
+            <h3>IPA Locale</h3>
+            <p class="price-value" id="prix-biere_2_ipa">4.50 €</p>
+            <p class="price-caption">PRIX UNITAIRE</p>
+          </article>
+
+          <article class="price-card price-card--red" data-product-id="biere_3_rouge">
+            <div class="price-card-topline">
+              <span class="ticker">FRR</span>
+              <span class="trend trend-up" data-trend-for="biere_3_rouge" aria-label="Hausse">▲</span>
+            </div>
+            <h3>Fruits Rouges</h3>
+            <p class="price-value" id="prix-biere_3_rouge">4.00 €</p>
+            <p class="price-caption">PRIX UNITAIRE</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="chart-panel" aria-labelledby="chart-title">
+        <div class="section-heading">
+          <div>
+            <p class="section-kicker">Analyse de performance</p>
+            <h2 id="chart-title">Évolution des cours</h2>
+          </div>
+          <span class="chart-period">SESSION EN COURS</span>
+        </div>
+        <div class="chart-container">
+          <canvas id="priceChart" aria-label="Graphique de l'évolution des prix" role="img"></canvas>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script type="module" src="js/dashboard.js?v=2"></script>
+</body>
+</html>
