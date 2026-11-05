@@ -370,9 +370,8 @@ async function chargerEtatInitial() {
   afficherPrixEtTendances();
   initChart(parametresBieres, prixCourants);
 
-  if (prix.etat === "krach") {
-    appliquerEtatKrach();
-  }
+  // Force l'état normal au démarrage pour ne jamais ouvrir en Krach
+  await set(ref(db, "prix_actuels/etat"), "normal");
 }
 
 async function demarrerMoteur() {
