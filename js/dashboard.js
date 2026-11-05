@@ -1,4 +1,4 @@
-import { db } from "../firebase-config.js";
+import { db, auth } from "../firebase-config.js";
 import {
   get,
   onChildAdded,
@@ -6,6 +6,7 @@ import {
   ref,
   set
 } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-database.js";
+import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-auth.js";
 
 let priceChart = null;
 let isKrachActive = false;
@@ -375,6 +376,17 @@ async function chargerEtatInitial() {
 }
 
 async function demarrerMoteur() {
+  // 1. Connexion automatique et silencieuse du Dashboard
+  try {
+    await signInWithEmailAndPassword(auth, "dashboard@foyer.local", "dashboard2026");
+    console.log("Cerveau connecté avec succès !");
+  } catch (error) {
+    console.error("Le Dashboard n'a pas pu s'authentifier.", error);
+    alert("Erreur de connexion du Dashboard. Vérifiez les identifiants.");
+    return; // On arrête tout si le PC n'a pas les droits
+  }
+
+  // 2. Lancement de la machine
   await chargerEtatInitial();
 
   let traitementEnCours = Promise.resolve();
