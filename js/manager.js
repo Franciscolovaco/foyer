@@ -1,5 +1,3 @@
-const EVENING_PASSWORD = "soiree2026";
-
 const productConfiguration = {
   "blonde-pression": {
     firebaseId: "biere_1_blonde",
@@ -18,11 +16,13 @@ const productConfiguration = {
 let connectedManagerName = "";
 let lastSaleId = null;
 let db = null;
+let auth = null;
 let firebaseDatabase = null;
+let firebaseAuthModule = null;
 
 const loginSection = document.querySelector("#login-section");
 const loginForm = document.querySelector("#login-form");
-const managerFirstNameInput = document.querySelector("#manager-first-name");
+const managerEmailInput = document.querySelector("#manager-email");
 const managerPasswordInput = document.querySelector("#manager-password");
 const venteSection = document.querySelector("#vente-section");
 const managerNameElement = document.querySelector("#manager-name");
@@ -37,17 +37,20 @@ function showError(message) {
 }
 
 async function loadFirebase() {
-  if (db && firebaseDatabase) {
+  if (db && firebaseDatabase && auth && firebaseAuthModule) {
     return;
   }
 
-  const [firebaseConfig, databaseModule] = await Promise.all([
+  const [firebaseConfig, databaseModule, authModule] = await Promise.all([
     import("../firebase-config.js"),
-    import("https://www.gstatic.com/firebasejs/13.2.0/firebase-database.js")
+    import("https://www.gstatic.com/firebasejs/13.2.0/firebase-database.js"),
+    import("https://www.gstatic.com/firebasejs/13.2.0/firebase-auth.js")
   ]);
 
   db = firebaseConfig.db;
+  auth = firebaseConfig.auth;
   firebaseDatabase = databaseModule;
+  firebaseAuthModule = authModule;
 }
 
 function getProductConfiguration(productId) {
@@ -179,22 +182,42 @@ async function triggerMarketCrash() {
   });
 }
 
-loginForm.addEventListener("submit", (event) => {
+// LOGIQUE D'AUTHENTIFICATION FIREBASE
+loginForm.addEventListener("submit", async (event) => {
   event.preventDefault();
 
-  const managerName = managerFirstNameInput.value.trim();
+  const email = managerEmailInput.value.trim();
   const password = managerPasswordInput.value;
 
-  if (!managerName || password !== EVENING_PASSWORD) {
-    showError("Prénom ou mot de passe incorrect.");
+  if (!email || !password) {
+    showError("Veuillez remplir tous les champs.");
     return;
   }
 
-  connectedManagerName = managerName;
-  showVenteSection();
+  try {
+    await loadFirebase();
+    // Tentative de connexion via Firebase Auth
+    await firebaseAuthModule.signInWithEmailAndPassword(auth, email, password);
+    
+    // On extrait le prénom de l'email (ex: "camille" depuis "camille@foyer.local")
+    let extractedName = email.split('@')[0];
+    connectedManagerName = extractedName.charAt(0).toUpperCase() + extractedName.slice(1);
+    
+    showVenteSection();
+  } catch (error) {
+    console.error("Erreur de connexion", error);
+    showError("Identifiants incorrects. Vérifiez l'email et le mot de passe.");
+  }
 });
 
-logoutButton.addEventListener("click", () => {
+logoutButton.addEventListener("click", async () => {
+  try {
+    await loadFirebase();
+    await firebaseAuthModule.signOut(auth);
+  } catch (error) {
+    console.error("Erreur déconnexion", error);
+  }
+
   connectedManagerName = "";
   lastSaleId = null;
   loginForm.reset();
@@ -260,6 +283,25 @@ crashMarketButton.addEventListener("click", async () => {
   }
 });
 
+endCrashButton.addEventListener("click", async () => {
+  if (!connectedManagerName) return;
+  
+  const confirmed = window.confirm("Arrêter le Krach et reprendre les cours normaux ?");
+  if (!confirmed) return;
+
+  try {
+    await loadFirebase();
+    await firebaseDatabase.push(firebaseDatabase.ref(db, "journal_ventes"), {
+      manager: connectedManagerName,
+      action: "fin_krach",
+      timestamp: Date.now()
+    });
+  } catch (error) {
+    console.error("Impossible d'arrêter le krach.", error);
+    showError("Erreur lors de l'arrêt du krach.");
+  }
+});
+
 async function listenToCurrentPrices() {
   try {
     await loadFirebase();
@@ -286,22 +328,3 @@ async function listenToCurrentPrices() {
 }
 
 listenToCurrentPrices();
-
-endCrashButton.addEventListener("click", async () => {
-  if (!connectedManagerName) return;
-  
-  const confirmed = window.confirm("Arrêter le Krach et reprendre les cours normaux ?");
-  if (!confirmed) return;
-
-  try {
-    await loadFirebase();
-    await firebaseDatabase.push(firebaseDatabase.ref(db, "journal_ventes"), {
-      manager: connectedManagerName,
-      action: "fin_krach",
-      timestamp: Date.now()
-    });
-  } catch (error) {
-    console.error("Impossible d'arrêter le krach.", error);
-    showError("Erreur lors de l'arrêt du krach.");
-  }
-});
