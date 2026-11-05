@@ -1,46 +1,55 @@
+
 :root {
-  color-scheme: light;
-  --color-background: #f3f5f7;
-  --color-surface: #ffffff;
-  --color-primary: #164a70;
-  --color-primary-dark: #103955;
-  --color-accent: #f2a900;
-  --color-danger: #c62828;
-  --color-danger-dark: #9e1f1f;
-  --color-text: #17212b;
-  --color-muted: #607080;
-  --color-border: #dce3e8;
-  --radius-card: 1rem;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color-scheme: dark;
+  /* Palette Dark FinTech */
+  --color-background: #000000;
+  --color-surface: #1C1C1E;
+  --color-text: #F2F2F7;
+  --color-muted: #8E8E93;
+  --color-border: #2C2C2E;
+  
+  /* Accents */
+  --color-sell-bg: #FFFFFF;
+  --color-sell-text: #000000;
+  --color-danger: #FF453A;
+  --color-danger-bg: rgba(255, 69, 58, 0.15);
+  
+  /* Formes */
+  --radius-card: 1.5rem;
+  --radius-button: 1rem;
+  --radius-pill: 2rem;
+  
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, sans-serif;
 }
 
 * {
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent; /* Retire le flash bleu sur mobile */
 }
 
-html {
-  min-width: 320px;
-  background: var(--color-background);
-}
-
-body {
+html, body {
   min-width: 320px;
   min-height: 100vh;
   margin: 0;
-  color: var(--color-text);
   background: var(--color-background);
+  color: var(--color-text);
 }
 
-button,
-input {
+button, input {
   font: inherit;
 }
 
 button {
   cursor: pointer;
   touch-action: manipulation;
+  transition: transform 0.15s ease, opacity 0.15s ease, background-color 0.15s ease;
 }
 
+button:active {
+  transform: scale(0.96);
+}
+
+/* --- SHELL & SCREENS --- */
 .app-shell {
   width: 100%;
   min-height: 100vh;
@@ -50,87 +59,86 @@ button {
   width: min(100%, 34rem);
   min-height: 100vh;
   margin: 0 auto;
-  padding: 1rem;
+  padding: 1.5rem 1.25rem;
 }
 
-.login-screen {
-  display: grid;
-  place-items: center;
-  padding: 1.25rem;
-}
-
-.login-card {
-  width: 100%;
-  padding: 1.5rem;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-card);
-  box-shadow: 0 0.75rem 2rem rgba(23, 33, 43, 0.08);
-}
-
+/* --- TYPOGRAPHIE --- */
 .eyebrow {
-  margin: 0 0 0.35rem;
-  color: var(--color-primary);
+  margin: 0 0 0.25rem;
+  color: var(--color-muted);
   font-size: 0.75rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
+  font-weight: 700;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 
-h1,
-h2,
-p {
+h1, h2, p {
   margin-top: 0;
 }
 
 h1 {
-  margin-bottom: 0.5rem;
-  font-size: clamp(1.65rem, 7vw, 2.15rem);
-  line-height: 1.1;
+  margin-bottom: 0.25rem;
+  font-size: clamp(1.75rem, 7vw, 2.25rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
 }
 
 .screen-intro {
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
   color: var(--color-muted);
+  font-size: 0.95rem;
+}
+
+/* --- LOGIN --- */
+.login-screen {
+  display: grid;
+  place-items: center;
+}
+
+.login-card {
+  width: 100%;
 }
 
 .field-group {
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
 }
 
 label {
   display: block;
-  margin-bottom: 0.45rem;
-  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: var(--color-muted);
+  font-size: 0.85rem;
+  font-weight: 600;
 }
 
 input {
   width: 100%;
-  min-height: 3.25rem;
-  padding: 0.75rem 0.9rem;
+  min-height: 3.5rem;
+  padding: 0.75rem 1rem;
   color: var(--color-text);
   background: var(--color-surface);
-  border: 2px solid var(--color-border);
-  border-radius: 0.65rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-button);
+  font-size: 1rem;
 }
 
-input:focus,
-button:focus-visible {
-  outline: 3px solid rgba(242, 169, 0, 0.55);
-  outline-offset: 2px;
+input:focus {
+  outline: none;
+  border-color: var(--color-muted);
+  background: #242426;
 }
 
+/* --- BOUTONS GENERAUX --- */
 .button {
-  min-height: 3.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3.5rem;
   padding: 0.75rem 1rem;
   border: 0;
-  border-radius: 0.65rem;
-  font-weight: 800;
-  transition: background-color 120ms ease, transform 120ms ease;
-}
-
-.button:active {
-  transform: scale(0.98);
+  border-radius: var(--radius-button);
+  font-size: 1rem;
+  font-weight: 700;
 }
 
 .button-full {
@@ -138,153 +146,143 @@ button:focus-visible {
 }
 
 .button-primary {
-  color: #fff;
-  background: var(--color-primary);
+  color: var(--color-sell-text);
+  background: var(--color-sell-bg);
 }
 
 .button-primary:hover {
-  background: var(--color-primary-dark);
+  background: #E5E5EA;
 }
 
+.button-ghost {
+  min-height: 2.5rem;
+  padding: 0.5rem 1rem;
+  color: var(--color-muted);
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  font-size: 0.85rem;
+}
+
+/* --- VENTE SCREEN HEADER --- */
 .vente-screen {
   display: none;
-  padding-top: 1rem;
-  padding-bottom: 1.25rem;
 }
 
 .vente-header {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
+  gap: 1rem;
+  margin-bottom: 2rem;
 }
 
-.vente-header h1 {
-  margin-bottom: 0;
-}
-
-.button-ghost {
-  min-height: 2.75rem;
-  padding: 0.5rem 0.65rem;
-  color: var(--color-primary);
-  background: transparent;
-  border: 2px solid var(--color-border);
-  font-size: 0.8rem;
-}
-
+/* --- GRILLE & CARTES --- */
 .beer-grid {
   display: grid;
   gap: 1rem;
+  margin-bottom: 2rem;
 }
 
 .beer-card {
-  padding: 1rem;
+  padding: 1.25rem;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-card);
-  box-shadow: 0 0.5rem 1.25rem rgba(23, 33, 43, 0.06);
 }
 
 .beer-card-heading {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
 }
 
 .beer-card h2 {
-  margin-bottom: 0;
-  font-size: 1.15rem;
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
 }
 
 .beer-price {
-  flex-shrink: 0;
-  margin-bottom: 0;
-  color: var(--color-primary);
-  font-size: 1.5rem;
-  font-weight: 900;
+  margin: 0;
+  color: var(--color-text);
+  font-size: 1.25rem;
+  font-weight: 700;
 }
 
+/* --- CONTROLE QUANTITE (PILULE) --- */
 .quantity-control {
   display: grid;
-  grid-template-columns: 3.25rem 1fr 3.25rem;
+  grid-template-columns: 3rem 1fr 3rem;
   align-items: center;
-  min-height: 3.25rem;
-  margin-bottom: 0.75rem;
-  overflow: hidden;
-  border: 2px solid var(--color-border);
-  border-radius: 0.65rem;
+  min-height: 3rem;
+  margin-bottom: 1rem;
+  background: var(--color-background);
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--color-border);
 }
 
 .quantity-button {
   align-self: stretch;
-  color: var(--color-primary);
-  background: #eef4f8;
+  color: var(--color-muted);
+  background: transparent;
   border: 0;
-  font-size: 1.75rem;
-  font-weight: 700;
+  font-size: 1.5rem;
+  font-weight: 400;
+}
+
+.quantity-button:active {
+  color: var(--color-text);
+  transform: none; /* Désactive le scale pour ce bouton précis */
 }
 
 .quantity-value {
   text-align: center;
-  font-size: 1.25rem;
-  font-weight: 800;
+  font-size: 1.1rem;
+  font-weight: 600;
 }
 
+/* --- BOUTON VENDRE --- */
 .button-sell {
   width: 100%;
-  min-height: 4.25rem;
-  color: #fff;
-  background: var(--color-accent);
-  font-size: 1.25rem;
-  letter-spacing: 0.04em;
+  min-height: 3.5rem;
+  color: var(--color-sell-text);
+  background: var(--color-sell-bg);
+  border-radius: var(--radius-button);
+  font-size: 1.05rem;
 }
 
-.button-sell:hover {
-  background: #d99400;
-}
-
+/* --- ZONES DANGER --- */
 .button-danger {
-  margin-top: 1.5rem;
-  color: #fff;
-  background: var(--color-danger);
-}
-
-.button-danger:hover {
-  background: var(--color-danger-dark);
+  color: var(--color-danger);
+  background: var(--color-danger-bg);
+  margin-bottom: 0.75rem;
 }
 
 .button-crash {
-  min-height: 3.75rem;
-  margin-top: 3rem;
-  color: #fff;
-  background: #7f1515;
-  border: 2px solid #ff4d4d;
-  font-size: 0.9rem;
-  letter-spacing: 0.04em;
+  margin-top: 2rem;
+  color: #000;
+  background: var(--color-danger);
+  box-shadow: 0 0 20px rgba(255, 69, 58, 0.4);
 }
 
-.button-crash:hover {
-  background: #a51d1d;
+#end-crash-button {
+  margin-top: 0.75rem;
+  border-color: var(--color-danger);
+  color: var(--color-danger);
+  background: transparent;
 }
 
+/* --- RESPONSIVE --- */
 @media (min-width: 42rem) {
   .screen {
     width: min(100%, 52rem);
-    padding: 2rem;
+    padding: 3rem 2rem;
   }
 
   .beer-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
-  .beer-card-heading {
-    display: block;
-  }
-
-  .beer-price {
-    margin-top: 0.5rem;
   }
 }
