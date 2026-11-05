@@ -1,16 +1,8 @@
 const productConfiguration = {
-  "blonde-pression": {
-    firebaseId: "biere_1_blonde",
-    label: "Blonde Pression"
-  },
-  "ipa-locale": {
-    firebaseId: "biere_2_ipa",
-    label: "IPA Locale"
-  },
-  "fruits-rouges": {
-    firebaseId: "biere_3_rouge",
-    label: "Fruits Rouges"
-  }
+  "blonde-pression": { firebaseId: "biere_1_blonde", label: "Blonde Pression" },
+  "ipa-locale": { firebaseId: "biere_2_ipa", label: "IPA Locale" },
+  "fruits-rouges": { firebaseId: "biere_3_rouge", label: "Fruits Rouges" },
+  "mystere": { firebaseId: "biere_4_mystere", label: "Pinte Mystère" }
 };
 
 let connectedManagerName = "";
@@ -245,6 +237,28 @@ beerGrid.addEventListener("click", async (event) => {
       setQuantity(productId, getQuantity(productId) - 1);
     } else if (button.dataset.action === "sell") {
       await registerSale(productId);
+    } else if (button.dataset.action === "sell-mystere") {
+      // 1. Tirage au sort parmi les bières standards
+      const bieresStandards = ["blonde-pression", "ipa-locale", "fruits-rouges"];
+      const biereTiree = bieresStandards[Math.floor(Math.random() * bieresStandards.length)];
+      
+      const product = getProductConfiguration(biereTiree);
+      const qty = getQuantity("mystere");
+
+      // 2. On annonce le résultat au barman (ça bloque l'écran jusqu'à ce qu'il valide)
+      window.alert(`🎲 ROULETTE : Sers ${qty} ${product.label} !`);
+
+      // 3. On enregistre la vente de la VRAIE bière dans Firebase
+      await loadFirebase();
+      const saleReference = await firebaseDatabase.push(firebaseDatabase.ref(db, "journal_ventes"), {
+        manager: connectedManagerName,
+        biere: product.firebaseId,
+        quantite: qty,
+        action: "vente",
+        timestamp: Date.now()
+      });
+      lastSaleId = saleReference.key;
+      setQuantity("mystere", 1);
     }
   } catch (error) {
     console.error("L'opération n'a pas pu être effectuée.", error);
