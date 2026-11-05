@@ -253,7 +253,7 @@ function memoriserPrixAvantCalcul() {
   }
 }
 
-aasync function obtenirBiereEtQuantitePourAnnulation(evenement) {
+async function obtenirBiereEtQuantitePourAnnulation(evenement) {
   let venteOrigine = ventesTraitees.get(evenement.reference_annulation);
 
   if (!venteOrigine) {
@@ -297,15 +297,13 @@ async function traiterEvenement(snapshot) {
     });
     updateChart(prixCourants);
     return true;
-  }
-  else if (evenement.action === "fin_krach") {
+  } else if (evenement.action === "fin_krach") {
     isKrachActive = false;
     document.body.classList.remove("krach-active");
     if (krachTimeoutId) {
       window.clearTimeout(krachTimeoutId);
       krachTimeoutId = null;
     }
-    // On met à jour l'état sur Firebase
     await set(ref(db, "prix_actuels"), {
       ...prixCourants,
       etat: "normal"
@@ -323,7 +321,6 @@ async function traiterEvenement(snapshot) {
       biere: evenement.biere,
       quantite
     });
-  }
   } else if (evenement.action === "annulation") {
     const venteAnnulee = await obtenirBiereEtQuantitePourAnnulation(evenement);
 
@@ -371,22 +368,19 @@ async function chargerEtatInitial() {
   afficherPrixEtTendances();
   initChart(parametresBieres, prixCourants);
 
-  // Force l'état normal au démarrage pour ne jamais ouvrir en Krach
   await set(ref(db, "prix_actuels/etat"), "normal");
 }
 
 async function demarrerMoteur() {
-  // 1. Connexion automatique et silencieuse du Dashboard
   try {
     await signInWithEmailAndPassword(auth, "dashboard@foyer.com", "dashboard");
     console.log("Cerveau connecté avec succès !");
   } catch (error) {
     console.error("Le Dashboard n'a pas pu s'authentifier.", error);
     alert("Erreur de connexion du Dashboard. Vérifiez les identifiants.");
-    return; // On arrête tout si le PC n'a pas les droits
+    return;
   }
 
-  // 2. Lancement de la machine
   await chargerEtatInitial();
 
   let traitementEnCours = Promise.resolve();
