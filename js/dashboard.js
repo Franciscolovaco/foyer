@@ -8,13 +8,19 @@ import {
 } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-database.js";
 import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-auth.js";
 
+// === VARIABLES GLOBALES ===
 let priceChart = null;
 let isKrachActive = false;
 let krachTimeoutId = null;
 
+// Ignore les événements vieux de plus de 2 minutes au chargement
 const startupTime = Date.now() - 120000;
-const HAUSSE_PAR_UNITE = 0.20;
-const BAISSE_AUTRES_PAR_UNITE = 0.05;
+
+// === NOUVEAUX PARAMÈTRES DE L'ALGORITHME ===
+const HAUSSE_PAR_UNITE = 0.30;       // La bière vendue prend +0.30€
+const BAISSE_TEMPORELLE = 0.05;      // Toutes les bières perdent 0.05€ avec le temps
+const RABAIS_MYSTERE = 0.30;         // La "prime au risque" de la pinte mystère
+const INTERVALLE_TEMPS = 15000;      // Le marché baisse toutes les 15 secondes
 
 const parametresBieres = {};
 const prixCourants = {};
@@ -22,11 +28,13 @@ const ventesTraitees = new Map();
 const prixAvantDernierEvenement = {};
 
 const chartColors = {
-  biere_1_blonde: "#FFD60A", // Or
-  biere_2_ipa: "#FF9F0A",    // Orange
-  biere_3_rouge: "#FF453A"   // Rouge vif
+  biere_1_blonde: "#FFD60A",
+  biere_2_ipa: "#FF9F0A",
+  biere_3_rouge: "#FF453A",
+  biere_4_mystere: "#BF5AF2" // Violet électrique
 };
 
+// === FONCTIONS UTILITAIRES ===
 function getCurrentTimeLabel() {
   return new Date().toLocaleTimeString("fr-FR", {
     hour: "2-digit",
@@ -35,6 +43,11 @@ function getCurrentTimeLabel() {
   });
 }
 
+function arrondirPrix(prix) {
+  return Math.round((prix + Number.EPSILON) * 100) / 100;
+}
+
+// === GESTION DU GRAPHIQUE (CHART.JS) ===
 function initChart(parametres, prixInitiaux) {
   const canvas = document.querySelector("#priceChart");
 
@@ -46,6 +59,7 @@ function initChart(parametres, prixInitiaux) {
     throw new Error("Chart.js n'est pas chargé.");
   }
 
+  // Calcul des limites pour l'axe Y du graphique
   const limitesPrix = Object.values(parametres).reduce(
     (limites, biere) => ({
       min: Math.min(limites.min, Number(biere.prix_min)),
@@ -59,15 +73,20 @@ function initChart(parametres, prixInitiaux) {
   }
 
   canvas.style.backgroundColor = "transparent";
-
   const labelInitial = getCurrentTimeLabel();
+
+  // Création des courbes pour chaque bière
   const datasets = Object.entries(parametres).map(([biere, configuration]) => ({
     label: configuration.nom || biere,
     biereId: biere,
     data: [Number(prixInitiaux[biere])],
     borderColor: chartColors[biere] || "#ffffff",
     backgroundColor: chartColors[biere] || "#ffffff",
-    borderWidth: 4,
+    
+    // Style spécifique pour la bière mystère (ligne plus fine et pointillée)
+    borderWidth: biere === "biere_4_mystere" ? 2 : 4,
+    borderDash: biere === "biere_4_mystere" ? [5, 5] : [],
+    
     pointRadius: 3,
     pointHoverRadius: 5,
     tension: 0,
@@ -86,20 +105,13 @@ function initChart(parametres, prixInitiaux) {
       maintainAspectRatio: false,
       scales: {
         x: {
-          grid: {
-            color: "#333333"
-          },
-          ticks: {
-            color: "#d8d8d8",
-            maxTicksLimit: 10
-          }
+          grid: { color: "#333333" },
+          ticks: { color: "#d8d8d8", maxTicksLimit: 10 }
         },
         y: {
           min: limitesPrix.min,
           max: limitesPrix.max,
-          grid: {
-            color: "#333333"
-          },
+          grid: { color: "#333333" },
           ticks: {
             color: "#d8d8d8",
             callback: (value) => `${Number(value).toFixed(2)} €`
@@ -131,6 +143,7 @@ function updateChart(nouveauxPrix) {
   for (const dataset of priceChart.data.datasets) {
     dataset.data.push(Number(nouveauxPrix[dataset.biereId]));
 
+    // Garde seulement les 30 derniers points pour la fluidité
     if (dataset.data.length > 30) {
       dataset.data.shift();
     }
@@ -143,16 +156,31 @@ function updateChart(nouveauxPrix) {
   priceChart.update();
 }
 
-function arrondirPrix(prix) {
-  return Math.round((prix + Number.EPSILON) * 100) / 100;
+// === LOGIQUE DE PRIX ET ALGORITHME ===
+
+function calculerPrixMystere() {
+  // On isole les vraies bières pour calculer la moyenne
+  const bieresStandard = Object.keys(parametresBieres).filter(b => b !== "biere_4_mystere");
+  
+  let total = 0;
+  for (const biere of bieresStandard) {
+    total += Number(prixCourants[biere]);
+  }
+  
+  const moyenne = total / bieresStandard.length;
+  
+  // Le prix mystère est la moyenne moins le rabais. Il ne descend jamais sous 1.00€ par sécurité.
+  prixCourants["biere_4_mystere"] = arrondirPrix(Math.max(1.00, moyenne - RABAIS_MYSTERE));
 }
 
 function calculerNouveauxPrix(biereVendue, quantite, estAnnulation = false) {
   if (isKrachActive) {
     for (const [biere, parametres] of Object.entries(parametresBieres)) {
-      prixCourants[biere] = Number(parametres.prix_min);
+      if (biere !== "biere_4_mystere") {
+        prixCourants[biere] = Number(parametres.prix_min);
+      }
     }
-
+    calculerPrixMystere();
     return prixCourants;
   }
 
@@ -167,36 +195,42 @@ function calculerNouveauxPrix(biereVendue, quantite, estAnnulation = false) {
   }
 
   const signe = estAnnulation ? -1 : 1;
+  const variation = signe * HAUSSE_PAR_UNITE * quantiteValide;
 
-  for (const [biere, parametres] of Object.entries(parametresBieres)) {
-    const prixActuel = Number(prixCourants[biere]);
-
-    if (!Number.isFinite(prixActuel)) {
-      throw new Error(`Prix actuel invalide pour : ${biere}`);
-    }
-
-    const variation = biere === biereVendue
-      ? signe * HAUSSE_PAR_UNITE * quantiteValide
-      : -signe * BAISSE_AUTRES_PAR_UNITE * quantiteValide;
-
-    prixCourants[biere] = arrondirPrix(
-      Math.min(
-        Number(parametres.prix_max),
-        Math.max(Number(parametres.prix_min), prixActuel + variation)
-      )
-    );
+  // 1. Seule la bière vendue voit son prix augmenter
+  const prixActuel = Number(prixCourants[biereVendue]);
+  const params = parametresBieres[biereVendue];
+  
+  if (!Number.isFinite(prixActuel)) {
+    throw new Error(`Prix actuel invalide pour : ${biereVendue}`);
   }
 
+  prixCourants[biereVendue] = arrondirPrix(
+    Math.min(
+      Number(params.prix_max),
+      Math.max(Number(params.prix_min), prixActuel + variation)
+    )
+  );
+
+  // 2. On met à jour la bière mystère en fonction du nouveau marché
+  calculerPrixMystere();
+  
   return prixCourants;
 }
 
+function memoriserPrixAvantCalcul() {
+  for (const [biere, prix] of Object.entries(prixCourants)) {
+    prixAvantDernierEvenement[biere] = Number(prix);
+  }
+}
+
+// === GESTION DE L'AFFICHAGE ===
 function afficherPrixEtTendances() {
   for (const biere of Object.keys(parametresBieres)) {
     const prixElement = document.querySelector(`#prix-${biere}`);
     const tendanceElement = document.querySelector(`[data-trend-for="${biere}"]`);
 
     if (!prixElement || !tendanceElement) {
-      console.error(`Éléments d'affichage introuvables pour : ${biere}`);
       continue;
     }
 
@@ -217,14 +251,19 @@ function afficherPrixEtTendances() {
   }
 }
 
+// === GESTION DU KRACH BOURSIER ===
 function appliquerEtatKrach() {
   isKrachActive = true;
   document.body.classList.add("krach-active");
 
+  // Toutes les vraies bières passent au prix minimum
   for (const [biere, parametres] of Object.entries(parametresBieres)) {
-    prixCourants[biere] = Number(parametres.prix_min);
+    if (biere !== "biere_4_mystere") {
+      prixCourants[biere] = Number(parametres.prix_min);
+    }
   }
-
+  
+  calculerPrixMystere();
   afficherPrixEtTendances();
 
   if (krachTimeoutId) {
@@ -244,15 +283,10 @@ function appliquerEtatKrach() {
     } catch (error) {
       console.error("Erreur lors de la réinitialisation de l'état du Krach.", error);
     }
-  }, 15000);
+  }, 15000); // Durée du krach : 15 secondes
 }
 
-function memoriserPrixAvantCalcul() {
-  for (const [biere, prix] of Object.entries(prixCourants)) {
-    prixAvantDernierEvenement[biere] = Number(prix);
-  }
-}
-
+// === GESTION DES EVENEMENTS (VENTE / ANNULATION) ===
 async function obtenirBiereEtQuantitePourAnnulation(evenement) {
   let venteOrigine = ventesTraitees.get(evenement.reference_annulation);
 
@@ -339,6 +373,47 @@ async function traiterEvenement(snapshot) {
   return true;
 }
 
+// === LA BOUCLE MAGIQUE : DEPRECIATION TEMPORELLE ===
+setInterval(async () => {
+  // On ne baisse pas les prix pendant un Krach (ils sont déjà au minimum)
+  if (isKrachActive) {
+    return;
+  }
+
+  let aChange = false;
+  memoriserPrixAvantCalcul();
+
+  const bieresStandard = Object.keys(parametresBieres).filter(b => b !== "biere_4_mystere");
+
+  for (const biere of bieresStandard) {
+    const prixActuel = Number(prixCourants[biere]);
+    const prixMin = Number(parametresBieres[biere].prix_min);
+    
+    // Si la bière est plus chère que son prix minimum, elle baisse de 0.05€
+    if (prixActuel > prixMin) {
+      prixCourants[biere] = arrondirPrix(Math.max(prixMin, prixActuel - BAISSE_TEMPORELLE));
+      aChange = true;
+    }
+  }
+
+  // Si au moins une bière a baissé, on met à jour le Dashboard et Firebase
+  if (aChange) {
+    calculerPrixMystere();
+    afficherPrixEtTendances();
+    updateChart(prixCourants);
+    
+    try {
+      await set(ref(db, "prix_actuels"), {
+        ...prixCourants,
+        etat: "normal"
+      });
+    } catch (error) {
+      console.error("Erreur lors de la mise à jour temporelle des prix.", error);
+    }
+  }
+}, INTERVALLE_TEMPS);
+
+// === DEMARRAGE ET INITIALISATION ===
 async function chargerEtatInitial() {
   const [parametresSnapshot, prixSnapshot] = await Promise.all([
     get(ref(db, "parametres_bieres")),
@@ -357,34 +432,51 @@ async function chargerEtatInitial() {
   }
 
   Object.assign(parametresBieres, parametres);
-  for (const biere of Object.keys(parametresBieres)) {
-    if (prix[biere] === undefined || prix[biere] === null) {
-      throw new Error(`Prix initial absent pour : ${biere}`);
-    }
+  
+  // Ajout virtuel de la bière mystère dans les paramètres pour la configuration
+  parametresBieres["biere_4_mystere"] = {
+    nom: "Pinte Mystère",
+    prix_min: 1, // Sécurité absolue
+    prix_max: 99
+  };
 
-    prixCourants[biere] = Number(prix[biere]);
+  for (const biere of Object.keys(parametresBieres)) {
+    // La bière mystère n'est pas dans Firebase au démarrage, on la saute ici
+    if (biere !== "biere_4_mystere") {
+      if (prix[biere] === undefined || prix[biere] === null) {
+        throw new Error(`Prix initial absent pour : ${biere}`);
+      }
+      prixCourants[biere] = Number(prix[biere]);
+    }
   }
 
+  // Initialisation du prix mystère basé sur les vrais prix récupérés
+  calculerPrixMystere();
+  
   afficherPrixEtTendances();
   initChart(parametresBieres, prixCourants);
 
+  // Force l'état normal au démarrage pour ne jamais ouvrir en Krach
   await set(ref(db, "prix_actuels/etat"), "normal");
 }
 
 async function demarrerMoteur() {
+  // 1. Connexion automatique et silencieuse du Dashboard
   try {
-    await signInWithEmailAndPassword(auth, "dashboard@foyer.com", "dashboard");
+    await signInWithEmailAndPassword(auth, "dashboard@foyer.local", "dashboard2026");
     console.log("Cerveau connecté avec succès !");
   } catch (error) {
     console.error("Le Dashboard n'a pas pu s'authentifier.", error);
     alert("Erreur de connexion du Dashboard. Vérifiez les identifiants.");
-    return;
+    return; // On arrête tout si le PC n'a pas les droits
   }
 
+  // 2. Lancement de la machine
   await chargerEtatInitial();
 
   let traitementEnCours = Promise.resolve();
 
+  // Écoute des nouvelles ventes
   onChildAdded(ref(db, "journal_ventes"), (snapshot) => {
     traitementEnCours = traitementEnCours
       .then(() => traiterEvenement(snapshot))
