@@ -22,9 +22,9 @@ const ventesTraitees = new Map();
 const prixAvantDernierEvenement = {};
 
 const chartColors = {
-  biere_1_blonde: "#f5d547",
-  biere_2_ipa: "#ff9f43",
-  biere_3_rouge: "#ff4d5a"
+  biere_1_blonde: "#FFD60A", // Or
+  biere_2_ipa: "#FF9F0A",    // Orange
+  biere_3_rouge: "#FF453A"   // Rouge vif
 };
 
 function getCurrentTimeLabel() {
