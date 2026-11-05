@@ -378,7 +378,7 @@ async function chargerEtatInitial() {
 async function demarrerMoteur() {
   // 1. Connexion automatique et silencieuse du Dashboard
   try {
-    await signInWithEmailAndPassword(auth, "dashboard@foyer.local", "dashboard2026");
+    await signInWithEmailAndPassword(auth, "dashboard@foyer.com", "dashboard");
     console.log("Cerveau connecté avec succès !");
   } catch (error) {
     console.error("Le Dashboard n'a pas pu s'authentifier.", error);
