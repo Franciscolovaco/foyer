@@ -1,102 +1,97 @@
 :root {
   color-scheme: dark;
-  --background: #121212;
-  --surface: #1b1d1f;
-  --surface-raised: #242729;
-  --border: #34383a;
-  --text: #f2f4f3;
-  --muted: #8d9695;
-  --green: #6dff75;
-  --red: #ff4d5a;
-  --amber: #f5b942;
-  --font-display: "Montserrat", "Segoe UI", sans-serif;
+  /* Palette Dark FinTech */
+  --color-bg: #000000;
+  --color-surface: #1C1C1E;
+  --color-text: #F2F2F7;
+  --color-muted: #8E8E93;
+  --color-border: #2C2C2E;
+  
+  /* Couleurs de tendances (Style Bourse) */
+  --color-up: #32D74B;
+  --color-down: #FF453A;
+  
+  /* Couleurs des bières (Vives et distinctes) */
+  --color-blonde: #FFD60A; /* Or */
+  --color-ipa: #FF9F0A;    /* Orange */
+  --color-rouge: #FF453A;  /* Rouge vif */
+  
+  /* Formes */
+  --radius-card: 1.5rem;
+  --radius-pill: 2rem;
+  
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, sans-serif;
 }
 
 * {
   box-sizing: border-box;
 }
 
-html,
-body {
+html, body {
   min-width: 320px;
   min-height: 100%;
   margin: 0;
-  background: var(--background);
+  background: var(--color-bg);
+  color: var(--color-text);
+  overflow-x: hidden;
 }
 
-body {
-  color: var(--text);
-  font-family: var(--font-display);
-}
-
+/* --- KRACH BOURSIER (ALERTE VISIBLE) --- */
 body.krach-active {
-  animation: krach-flash 0.8s steps(2, end) infinite;
+  animation: krach-pulse 1.5s infinite;
 }
 
 body.krach-active::before {
+  content: "⚠ KRACH BOURSIER EN COURS — PRIX AU MINIMUM ⚠";
   position: fixed;
-  z-index: 10;
   top: 0;
   left: 0;
   width: 100%;
-  padding: 0.85rem;
-  color: #fff;
-  background: var(--red);
-  content: "⚠ KRACH BOURSIER — PRIX AU MINIMUM ⚠";
-  font-size: clamp(0.8rem, 1.8vw, 1.25rem);
+  padding: 0.75rem;
+  background: var(--color-down);
+  color: #FFF;
+  font-size: 1.1rem;
   font-weight: 800;
-  letter-spacing: 0.08em;
   text-align: center;
+  letter-spacing: 0.1em;
+  z-index: 9999;
+  text-transform: uppercase;
+  box-shadow: 0 4px 20px rgba(255, 69, 58, 0.5);
 }
 
-@keyframes krach-flash {
-  0%,
-  100% {
-    background: #121212;
-  }
-
-  50% {
-    background: #3a0909;
-  }
+@keyframes krach-pulse {
+  0%, 100% { background-color: var(--color-bg); }
+  50% { background-color: #3A0A0A; } /* Rouge très sombre */
 }
 
+/* --- STRUCTURE GLOBALE --- */
 .dashboard-shell {
   width: 100%;
   min-height: 100vh;
-  padding: clamp(1.25rem, 3vw, 3rem);
+  padding: clamp(1.5rem, 3vw, 3rem);
+  padding-top: clamp(2rem, 4vw, 4rem); /* Espace pour la bannière de krach */
 }
 
 .dashboard-header {
-  padding-bottom: clamp(1.5rem, 3vw, 2.5rem);
-  text-align: center;
-  border-bottom: 1px solid var(--border);
+  padding-bottom: 2rem;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid var(--color-border);
 }
 
-.market-label,
-.section-kicker,
-.price-caption,
-.ticker,
-.chart-period,
-.market-clock {
-  letter-spacing: 0.12em;
+.market-label, .section-kicker, .price-caption, .chart-period, .market-clock {
+  color: var(--color-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 
-.market-label,
-.section-kicker {
-  margin: 0 0 0.5rem;
-  color: var(--green);
-  font-size: clamp(0.65rem, 1vw, 0.8rem);
-  font-weight: 700;
-}
-
 .dashboard-header h1 {
-  margin: 0;
-  color: var(--text);
-  font-size: clamp(2rem, 5vw, 4.5rem);
+  margin: 0.5rem 0 0;
+  color: var(--color-text);
+  font-size: clamp(2rem, 5vw, 3.5rem);
   font-weight: 800;
-  letter-spacing: 0.04em;
-  line-height: 1.05;
+  letter-spacing: -0.04em;
 }
 
 .market-status {
@@ -104,97 +99,65 @@ body.krach-active::before {
   align-items: center;
   gap: 0.5rem;
   margin: 1rem 0 0;
-  color: var(--muted);
-  font-size: clamp(0.7rem, 1.1vw, 0.9rem);
+  color: var(--color-text);
+  font-size: 0.9rem;
   font-weight: 600;
 }
 
 .status-dot {
-  width: 0.55rem;
-  height: 0.55rem;
-  background: var(--green);
+  width: 0.6rem;
+  height: 0.6rem;
+  background: var(--color-up);
   border-radius: 50%;
-  box-shadow: 0 0 0.75rem var(--green);
+  box-shadow: 0 0 10px rgba(50, 215, 75, 0.6);
+  animation: pulse-dot 2s infinite;
 }
 
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* --- GRILLE PRINCIPALE --- */
 .dashboard-content {
   display: grid;
-  gap: clamp(1.25rem, 2.5vw, 2.5rem);
+  gap: 2rem;
   max-width: 120rem;
   margin: 0 auto;
-  padding-top: clamp(1.5rem, 3vw, 3rem);
-}
-
-.prices-panel,
-.chart-panel {
-  min-width: 0;
 }
 
 .section-heading {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  gap: 1rem;
-  margin-bottom: 1rem;
-}
-
-.section-kicker {
-  margin-bottom: 0.35rem;
-  color: var(--muted);
+  margin-bottom: 1.25rem;
 }
 
 .section-heading h2 {
   margin: 0;
-  font-size: clamp(1.1rem, 2vw, 1.6rem);
+  font-size: 1.25rem;
   font-weight: 700;
+  letter-spacing: -0.02em;
 }
 
-.market-clock,
-.chart-period {
-  flex-shrink: 0;
-  color: var(--green);
-  font-size: 0.65rem;
-  font-weight: 700;
-}
-
+/* --- CARTES DES PRIX --- */
 .beer-price-list {
   display: grid;
-  gap: 0.85rem;
+  gap: 1rem;
 }
 
 .price-card {
-  position: relative;
-  overflow: hidden;
-  padding: clamp(1rem, 1.8vw, 1.5rem);
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-left: 0.3rem solid var(--green);
-  border-radius: 0.35rem;
-  box-shadow: 0 0.75rem 2rem rgba(0, 0, 0, 0.2);
+  padding: 1.5rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  border-left: 6px solid; /* La ligne de couleur qui identifie la bière */
 }
 
-.price-card::after {
-  position: absolute;
-  right: -2rem;
-  bottom: -3rem;
-  width: 8rem;
-  height: 8rem;
-  content: "";
-  background: rgba(109, 255, 117, 0.04);
-  border-radius: 50%;
-}
-
-.price-card--ipa {
-  border-left-color: var(--red);
-}
-
-.price-card--ipa::after {
-  background: rgba(255, 77, 90, 0.04);
-}
-
-.price-card--red {
-  border-left-color: var(--amber);
-}
+/* Couleurs spécifiques par bière */
+.price-card--blonde { border-left-color: var(--color-blonde); }
+.price-card--ipa { border-left-color: var(--color-ipa); }
+.price-card--red { border-left-color: var(--color-rouge); }
 
 .price-card-topline {
   display: flex;
@@ -203,104 +166,81 @@ body.krach-active::before {
 }
 
 .ticker {
-  color: var(--muted);
-  font-size: 0.65rem;
+  padding: 0.2rem 0.6rem;
+  background: #3A3A3C;
+  color: var(--color-text);
+  border-radius: var(--radius-pill);
+  font-size: 0.7rem;
   font-weight: 700;
+  letter-spacing: 0.05em;
 }
+
+.price-card--blonde .ticker { color: #000; background: var(--color-blonde); }
+.price-card--ipa .ticker { color: #000; background: var(--color-ipa); }
+.price-card--red .ticker { color: #000; background: var(--color-rouge); }
 
 .trend {
-  font-size: 1.15rem;
-  font-weight: 800;
+  font-size: 1.25rem;
+  font-weight: 900;
 }
-
-.trend-up {
-  color: var(--green);
-}
-
-.trend-down {
-  color: var(--red);
-}
+.trend-up { color: var(--color-up); }
+.trend-down { color: var(--color-down); }
 
 .price-card h3 {
-  position: relative;
-  z-index: 1;
-  margin: 0.8rem 0 0.4rem;
-  font-size: clamp(0.95rem, 1.5vw, 1.2rem);
+  margin: 1rem 0 0.25rem;
+  font-size: 1.1rem;
   font-weight: 600;
+  color: var(--color-muted);
 }
 
 .price-value {
-  position: relative;
-  z-index: 1;
   margin: 0;
-  color: var(--text);
-  font-size: clamp(2rem, 4vw, 3.75rem);
+  color: var(--color-text);
+  font-size: clamp(2.5rem, 4vw, 3.5rem);
   font-weight: 800;
-  letter-spacing: -0.04em;
-  line-height: 1;
+  letter-spacing: -0.05em;
+  font-variant-numeric: tabular-nums; /* Garde les chiffres de même largeur */
 }
 
 .price-caption {
-  position: relative;
-  z-index: 1;
-  margin: 0.75rem 0 0;
-  color: var(--muted);
-  font-size: 0.6rem;
-  font-weight: 600;
+  margin-top: 0.5rem;
 }
 
+/* --- GRAPHIQUE --- */
 .chart-panel {
   display: flex;
   flex-direction: column;
+  padding: 1.5rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
   min-height: 25rem;
-  padding: clamp(1rem, 2vw, 1.5rem);
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 0.35rem;
 }
 
 .chart-container {
   position: relative;
   flex: 1;
   min-height: 19rem;
-  padding-top: 0.75rem;
+  padding-top: 1rem;
 }
 
-.chart-container canvas {
-  display: block;
-  width: 100% !important;
-  height: 100% !important;
-}
-
-@media (min-width: 48rem) {
+/* RESPONSIVE DESKTOP */
+@media (min-width: 64rem) {
   .dashboard-content {
-    grid-template-columns: minmax(17rem, 0.8fr) minmax(0, 2fr);
+    grid-template-columns: 22rem 1fr;
     align-items: stretch;
   }
-
   .prices-panel {
     display: flex;
     flex-direction: column;
   }
-
   .beer-price-list {
     flex: 1;
-    grid-template-rows: repeat(3, 1fr);
-  }
-
-  .price-card {
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: space-between;
   }
-}
-
-@media (min-width: 80rem) {
-  .dashboard-content {
-    grid-template-columns: minmax(20rem, 0.75fr) minmax(0, 2fr);
-  }
-
   .chart-panel {
-    min-height: 38rem;
+    min-height: 100%;
   }
 }
