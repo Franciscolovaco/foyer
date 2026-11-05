@@ -29,6 +29,7 @@ const managerNameElement = document.querySelector("#manager-name");
 const logoutButton = document.querySelector("#logout-button");
 const cancelLastSaleButton = document.querySelector("#cancel-last-sale-button");
 const crashMarketButton = document.querySelector("#crash-market-button");
+const endCrashButton = document.querySelector("#end-crash-button");
 const beerGrid = document.querySelector("#beer-grid");
 
 function showError(message) {
@@ -285,3 +286,22 @@ async function listenToCurrentPrices() {
 }
 
 listenToCurrentPrices();
+
+endCrashButton.addEventListener("click", async () => {
+  if (!connectedManagerName) return;
+  
+  const confirmed = window.confirm("Arrêter le Krach et reprendre les cours normaux ?");
+  if (!confirmed) return;
+
+  try {
+    await loadFirebase();
+    await firebaseDatabase.push(firebaseDatabase.ref(db, "journal_ventes"), {
+      manager: connectedManagerName,
+      action: "fin_krach",
+      timestamp: Date.now()
+    });
+  } catch (error) {
+    console.error("Impossible d'arrêter le krach.", error);
+    showError("Erreur lors de l'arrêt du krach.");
+  }
+});

@@ -11,7 +11,7 @@ let priceChart = null;
 let isKrachActive = false;
 let krachTimeoutId = null;
 
-const startupTime = Date.now();
+const startupTime = Date.now() - 120000;
 const HAUSSE_PAR_UNITE = 0.20;
 const BAISSE_AUTRES_PAR_UNITE = 0.05;
 
@@ -287,6 +287,20 @@ async function traiterEvenement(snapshot) {
       etat: "krach"
     });
     updateChart(prixCourants);
+    return true;
+  }
+  else if (evenement.action === "fin_krach") {
+    isKrachActive = false;
+    document.body.classList.remove("krach-active");
+    if (krachTimeoutId) {
+      window.clearTimeout(krachTimeoutId);
+      krachTimeoutId = null;
+    }
+    // On met à jour l'état sur Firebase
+    await set(ref(db, "prix_actuels"), {
+      ...prixCourants,
+      etat: "normal"
+    });
     return true;
   }
 
