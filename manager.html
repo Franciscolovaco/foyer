@@ -103,6 +103,22 @@
             VENDRE
           </button>
         </article>
+
+        <article class="beer-card" data-product-id="mystere">
+          <div class="beer-card-heading">
+            <h2>Pinte Mystère 🎲</h2>
+            <p class="beer-price" data-price-for="biere_4_mystere">-- €</p>
+          </div>
+          <div class="quantity-control" aria-label="Quantité">
+            <button class="quantity-button" type="button" data-action="decrease-quantity">−</button>
+            <span class="quantity-value" data-quantity-for="mystere">1</span>
+            <button class="quantity-button" type="button" data-action="increase-quantity">+</button>
+          </div>
+          <button class="button button-sell button-primary" type="button" data-action="sell-mystere" style="background: var(--color-mystere); color: white;">
+            TIRER AU SORT
+          </button>
+        </article>
+        
       </div>
 
       <button id="cancel-last-sale-button" class="button button-danger button-full" type="button">
