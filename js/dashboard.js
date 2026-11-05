@@ -253,7 +253,7 @@ function memoriserPrixAvantCalcul() {
   }
 }
 
-async function obtenirBiereEtQuantitePourAnnulation(evenement) {
+aasync function obtenirBiereEtQuantitePourAnnulation(evenement) {
   let venteOrigine = ventesTraitees.get(evenement.reference_annulation);
 
   if (!venteOrigine) {
@@ -264,7 +264,6 @@ async function obtenirBiereEtQuantitePourAnnulation(evenement) {
   }
 
   if (!venteOrigine ||
-      venteOrigine.action !== "vente" ||
       !venteOrigine.biere ||
       !Number.isInteger(Number(venteOrigine.quantite))) {
     throw new Error(
@@ -274,7 +273,7 @@ async function obtenirBiereEtQuantitePourAnnulation(evenement) {
 
   return {
     biere: venteOrigine.biere,
-    quantite: venteOrigine.quantite
+    quantite: Number(venteOrigine.quantite)
   };
 }
 
@@ -320,9 +319,11 @@ async function traiterEvenement(snapshot) {
     memoriserPrixAvantCalcul();
     calculerNouveauxPrix(evenement.biere, quantite);
     ventesTraitees.set(snapshot.key, {
+      action: "vente",
       biere: evenement.biere,
       quantite
     });
+  }
   } else if (evenement.action === "annulation") {
     const venteAnnulee = await obtenirBiereEtQuantitePourAnnulation(evenement);
 
