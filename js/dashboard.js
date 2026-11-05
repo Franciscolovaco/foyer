@@ -230,11 +230,20 @@ function appliquerEtatKrach() {
     window.clearTimeout(krachTimeoutId);
   }
 
-  krachTimeoutId = window.setTimeout(() => {
+  krachTimeoutId = window.setTimeout(async () => {
     isKrachActive = false;
     document.body.classList.remove("krach-active");
     krachTimeoutId = null;
-  }, 300000);
+
+    try {
+      await set(ref(db, "prix_actuels"), {
+        ...prixCourants,
+        etat: "normal"
+      });
+    } catch (error) {
+      console.error("Erreur lors de la réinitialisation de l'état du Krach.", error);
+    }
+  }, 15000);
 }
 
 function memoriserPrixAvantCalcul() {
