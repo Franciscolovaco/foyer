@@ -17,13 +17,13 @@
 
         <form id="login-form">
           <div class="field-group">
-            <label for="manager-first-name">Ton Prénom (Manager)</label>
+            <label for="manager-email">Ton Email (Manager)</label>
             <input
-              id="manager-first-name"
-              name="managerFirstName"
-              type="text"
-              autocomplete="given-name"
-              placeholder="Ex. Camille"
+              id="manager-email"
+              name="email"
+              type="email"
+              autocomplete="email"
+              placeholder="Ex. camille@foyer.local"
               required
             >
           </div>
@@ -111,12 +111,14 @@
 
       <button id="crash-market-button" class="button button-crash button-full" type="button">
         KRACH BOURSIER 🚨
+      </button>
+      
       <button id="end-crash-button" class="button button-ghost button-full" type="button" style="margin-top: 1rem; border-color: var(--color-danger); color: var(--color-danger);">
         STOPPER LE KRACH 🛑
       </button>
     </section>
   </main>
 
-  <script type="module" src="js/manager.js?v=4"></script>
+  <script type="module" src="js/manager.js?v=5"></script>
 </body>
 </html>
